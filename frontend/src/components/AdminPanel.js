@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
 function AdminPanel({ token, setToken }) {
     const [activeMenu, setActiveMenu] = useState('dashboard');
@@ -35,11 +35,8 @@ function AdminPanel({ token, setToken }) {
     const headers = { Authorization: `Bearer ${token}` };
 
     useEffect(() => {
-        fetchAllData();
-        // Animation on menu change
-        setFadeIn(false);
-        setTimeout(() => setFadeIn(true), 50);
-    }, [chartPeriod, activeMenu]);
+    fetchAllData();
+}, [chartPeriod, activeMenu]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const fetchAllData = async () => {
         setLoading(true);
@@ -253,8 +250,6 @@ function AdminPanel({ token, setToken }) {
         { id: 'manage-packages', icon: '📦', label: 'Manage Packages', color: 'from-emerald-500 to-teal-600' },
         { id: 'settings', icon: '⚙️', label: 'Settings', color: 'from-gray-500 to-gray-700' }
     ];
-
-    const pieColors = ['#06b6d4', '#f59e0b', '#10b981', '#8b5cf6', '#ef4444', '#ec4899'];
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-black">

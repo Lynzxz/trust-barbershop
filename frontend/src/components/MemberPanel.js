@@ -17,8 +17,8 @@ function MemberPanel({ token, setToken }) {
     const headers = { Authorization: `Bearer ${token}` };
 
     useEffect(() => {
-        fetchDashboard();
-    }, []);
+    fetchDashboard();
+}, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     const fetchDashboard = async () => {
         try {
