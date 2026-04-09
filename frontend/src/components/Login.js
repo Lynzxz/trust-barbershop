@@ -100,12 +100,16 @@ function Login({ setToken, setRole }) {
         setLoginError('');
         setLoading(true);
         try {
-            const res = await axios.post(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/login`, { username, password });
+            // PASTIKAN URL INI BENAR
+            const API_URL = 'http://localhost:5000';
+            const res = await axios.post(`${API_URL}/api/login`, { username, password });
+            
             localStorage.setItem('token', res.data.token);
             localStorage.setItem('role', res.data.role);
             setToken(res.data.token);
             setRole(res.data.role);
         } catch (err) {
+            console.error('Login error:', err);
             setLoginError(texts.errorMsg);
             setShake(true);
             setTimeout(() => setShake(false), 600);
@@ -160,10 +164,6 @@ function Login({ setToken, setRole }) {
                 @keyframes tickerScroll {
                     0% { transform: translateX(100%); }
                     100% { transform: translateX(-100%); }
-                }
-                @keyframes pulse {
-                    0%, 100% { opacity: 1; }
-                    50% { opacity: 0.5; }
                 }
                 @keyframes spin {
                     to { transform: rotate(360deg); }
@@ -382,7 +382,6 @@ function Login({ setToken, setRole }) {
 
                     {/* Logo & Title */}
                     <div className="header-area" style={{ textAlign: 'center', marginBottom: '32px' }}>
-                        {/* Scissors icon */}
                         <div style={{ position: 'relative', display: 'inline-block', marginBottom: '16px' }}>
                             <div style={{
                                 position: 'absolute', inset: '-8px',
@@ -455,7 +454,6 @@ function Login({ setToken, setRole }) {
                             overflow: 'hidden',
                         }}
                     >
-                        {/* Card glow accent top */}
                         <div style={{
                             position: 'absolute', top: 0, left: '20%', right: '20%', height: '1px',
                             background: 'linear-gradient(90deg, transparent, rgba(212,175,55,0.6), transparent)',
@@ -463,8 +461,6 @@ function Login({ setToken, setRole }) {
                         }} />
 
                         <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-
-                            {/* Username field */}
                             <div>
                                 <label style={{
                                     display: 'block', fontSize: '12px',
@@ -498,7 +494,6 @@ function Login({ setToken, setRole }) {
                                 </div>
                             </div>
 
-                            {/* Password field */}
                             <div>
                                 <label style={{
                                     display: 'block', fontSize: '12px',
@@ -557,7 +552,6 @@ function Login({ setToken, setRole }) {
                                 </div>
                             </div>
 
-                            {/* Error message */}
                             {loginError && (
                                 <div style={{
                                     display: 'flex', alignItems: 'center', gap: '8px',
@@ -576,7 +570,6 @@ function Login({ setToken, setRole }) {
                                 </div>
                             )}
 
-                            {/* Submit button */}
                             <button
                                 type="submit"
                                 disabled={loading}
@@ -606,7 +599,6 @@ function Login({ setToken, setRole }) {
                             </button>
                         </form>
 
-                        {/* Divider */}
                         <div style={{
                             display: 'flex', alignItems: 'center', gap: '12px',
                             margin: '24px 0 16px',
@@ -618,7 +610,6 @@ function Login({ setToken, setRole }) {
                             <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.06)' }} />
                         </div>
 
-                        {/* Contact buttons */}
                         <div style={{ display: 'flex', gap: '10px' }}>
                             <button
                                 className="contact-btn"
@@ -655,7 +646,6 @@ function Login({ setToken, setRole }) {
                         </div>
                     </div>
 
-                    {/* Footer */}
                     <div style={{ textAlign: 'center', marginTop: '24px' }}>
                         <p style={{
                             fontSize: '11px',
