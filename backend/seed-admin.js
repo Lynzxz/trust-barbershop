@@ -12,6 +12,7 @@ async function main() {
             username: 'trust',
             password_hash: hashed,
             full_name: 'Admin Trust',
+            email: 'admin@trust.com',
             role: 'admin'
         }
     });
