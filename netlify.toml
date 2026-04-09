@@ -1,4 +1,7 @@
 [build]
   base = "frontend"
-  command = "npm install && DISABLE_ESLINT_PLUGIN=true npm run build"
+  command = "npm install --include=dev && DISABLE_ESLINT_PLUGIN=true npm run build"
   publish = "build"
+
+[build.environment]
+  NPM_CONFIG_PRODUCTION = "false"
