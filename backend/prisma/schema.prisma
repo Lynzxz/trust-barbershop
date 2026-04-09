@@ -12,7 +12,7 @@ model User {
   username        String    @unique
   password_hash   String
   full_name       String
-  email           String    @unique
+  email           String?    @unique
   phone           String?
   address         String?
   birth_date      DateTime?
