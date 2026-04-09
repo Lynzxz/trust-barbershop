@@ -5,10 +5,78 @@ function Login({ setToken, setRole }) {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
-    const [language, setLanguage] = useState('id'); // 'id' or 'en'
+    const [language, setLanguage] = useState('id');
     const [showPassword, setShowPassword] = useState(false);
     const [particles, setParticles] = useState([]);
-    const [greeting, setGreeting] = useState('');
+    const [currentTime, setCurrentTime] = useState(new Date());
+
+    // Contact info
+    const contact = {
+        whatsapp: '6282120680023',
+        email: 'fynxrt@gmail.com',
+        phone: '+62 821-2068-0023'
+    };
+
+    // Update time every second
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setCurrentTime(new Date());
+        }, 1000);
+        return () => clearInterval(timer);
+    }, []);
+
+    // Format time
+    const formattedTime = currentTime.toLocaleTimeString('id-ID', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+    });
+
+    const formattedDate = currentTime.toLocaleDateString('id-ID', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+    });
+
+    const formattedDateEn = currentTime.toLocaleDateString('en-US', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+    });
+
+    // Get greeting based on time
+    const getGreeting = () => {
+        const hour = currentTime.getHours();
+        if (language === 'id') {
+            if (hour >= 3 && hour < 11) return 'Selamat Pagi';
+            if (hour >= 11 && hour < 15) return 'Selamat Siang';
+            if (hour >= 15 && hour < 18) return 'Selamat Sore';
+            return 'Selamat Malam';
+        } else {
+            if (hour >= 5 && hour < 12) return 'Good Morning';
+            if (hour >= 12 && hour < 17) return 'Good Afternoon';
+            if (hour >= 17 && hour < 21) return 'Good Evening';
+            return 'Good Night';
+        }
+    };
+
+    // Generate particles
+    useEffect(() => {
+        const newParticles = [];
+        for (let i = 0; i < 60; i++) {
+            newParticles.push({
+                id: i,
+                x: Math.random() * 100,
+                y: Math.random() * 100,
+                size: Math.random() * 4 + 2,
+                duration: Math.random() * 15 + 8,
+                delay: Math.random() * 8
+            });
+        }
+        setParticles(newParticles);
+    }, []);
 
     // Translations
     const t = {
@@ -21,15 +89,13 @@ function Login({ setToken, setRole }) {
             passwordPlaceholder: 'Masukkan kata sandi',
             login: 'Masuk',
             loggingIn: 'Sedang masuk...',
-            noAccount: 'Member? Hubungi admin untuk akun',
-            welcome: 'Selamat Datang Kembali',
-            greetingMorning: 'Selamat Pagi',
-            greetingAfternoon: 'Selamat Siang',
-            greetingEvening: 'Selamat Malam',
-            forgotPassword: 'Lupa kata sandi?',
-            or: 'atau',
+            needHelp: 'Butuh bantuan?',
+            contactWhatsapp: 'Hubungi via WhatsApp',
+            contactEmail: 'Kirim Email',
+            welcome: 'Selamat Datang',
             demoCreds: 'Demo: admin / admin123',
-            language: 'Bahasa'
+            language: 'Bahasa',
+            footer: 'Sistem Manajemen Premium'
         },
         en: {
             title: 'Trust Barbershop',
@@ -40,43 +106,17 @@ function Login({ setToken, setRole }) {
             passwordPlaceholder: 'Enter your password',
             login: 'Login',
             loggingIn: 'Logging in...',
-            noAccount: 'Member? Contact admin for account',
-            welcome: 'Welcome Back',
-            greetingMorning: 'Good Morning',
-            greetingAfternoon: 'Good Afternoon',
-            greetingEvening: 'Good Evening',
-            forgotPassword: 'Forgot password?',
-            or: 'or',
+            needHelp: 'Need help?',
+            contactWhatsapp: 'Contact via WhatsApp',
+            contactEmail: 'Send Email',
+            welcome: 'Welcome',
             demoCreds: 'Demo: admin / admin123',
-            language: 'Language'
+            language: 'Language',
+            footer: 'Premium Management System'
         }
     };
 
     const texts = t[language];
-
-    // Get greeting based on time
-    useEffect(() => {
-        const hour = new Date().getHours();
-        if (hour < 12) setGreeting(texts.greetingMorning);
-        else if (hour < 18) setGreeting(texts.greetingAfternoon);
-        else setGreeting(texts.greetingEvening);
-    }, [language, texts.greetingMorning, texts.greetingAfternoon, texts.greetingEvening]);
-
-    // Generate particles
-    useEffect(() => {
-        const newParticles = [];
-        for (let i = 0; i < 50; i++) {
-            newParticles.push({
-                id: i,
-                x: Math.random() * 100,
-                y: Math.random() * 100,
-                size: Math.random() * 4 + 2,
-                duration: Math.random() * 10 + 5,
-                delay: Math.random() * 5
-            });
-        }
-        setParticles(newParticles);
-    }, []);
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -94,14 +134,22 @@ function Login({ setToken, setRole }) {
         }
     };
 
+    const openWhatsApp = () => {
+        window.open(`https://wa.me/${contact.whatsapp}`, '_blank');
+    };
+
+    const openEmail = () => {
+        window.location.href = `mailto:${contact.email}`;
+    };
+
     return (
         <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-900 via-gray-900 to-black">
             {/* Particle Background */}
-            <div className="absolute inset-0 overflow-hidden">
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 {particles.map((p) => (
                     <div
                         key={p.id}
-                        className="absolute bg-cyan-400/30 rounded-full animate-float"
+                        className="absolute bg-cyan-400/20 rounded-full animate-float"
                         style={{
                             left: `${p.x}%`,
                             top: `${p.y}%`,
@@ -115,21 +163,21 @@ function Login({ setToken, setRole }) {
             </div>
 
             {/* Animated Gradient Orbs */}
-            <div className="absolute top-20 left-10 w-72 h-72 bg-cyan-500/20 rounded-full blur-3xl animate-pulse-slow" />
-            <div className="absolute bottom-20 right-10 w-96 h-96 bg-amber-500/20 rounded-full blur-3xl animate-pulse-slow animation-delay-1000" />
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl animate-pulse-slow animation-delay-2000" />
+            <div className="absolute top-20 left-10 w-72 h-72 bg-cyan-500/15 rounded-full blur-3xl animate-pulse-slow pointer-events-none" />
+            <div className="absolute bottom-20 right-10 w-96 h-96 bg-amber-500/15 rounded-full blur-3xl animate-pulse-slow animation-delay-1000 pointer-events-none" />
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl animate-pulse-slow animation-delay-2000 pointer-events-none" />
 
             {/* Language Switcher */}
             <div className="absolute top-4 right-4 z-20 flex gap-2 bg-black/30 backdrop-blur-md rounded-full p-1 border border-white/10">
                 <button
                     onClick={() => setLanguage('id')}
-                    className={`px-3 py-1 rounded-full text-sm font-medium transition-all duration-300 ${language === 'id' ? 'bg-cyan-500 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
+                    className={`px-3 py-1 rounded-full text-sm font-medium transition-all duration-300 ${language === 'id' ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
                 >
                     🇮🇩 ID
                 </button>
                 <button
                     onClick={() => setLanguage('en')}
-                    className={`px-3 py-1 rounded-full text-sm font-medium transition-all duration-300 ${language === 'en' ? 'bg-cyan-500 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
+                    className={`px-3 py-1 rounded-full text-sm font-medium transition-all duration-300 ${language === 'en' ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
                 >
                     🇬🇧 EN
                 </button>
@@ -138,24 +186,36 @@ function Login({ setToken, setRole }) {
             {/* Main Login Card */}
             <div className="relative z-10 min-h-screen flex items-center justify-center p-4">
                 <div className="w-full max-w-md">
-                    {/* Animated Logo Card */}
-                    <div className="text-center mb-8 animate-slideDown">
+                    {/* Date & Time Display */}
+                    <div className="text-center mb-6 animate-slideDown">
+                        <div className="inline-block bg-black/30 backdrop-blur-md rounded-2xl px-4 py-2 border border-white/10">
+                            <p className="text-cyan-400 text-sm font-mono">{formattedTime}</p>
+                            <p className="text-gray-400 text-xs">{language === 'id' ? formattedDate : formattedDateEn}</p>
+                        </div>
+                    </div>
+
+                    {/* Logo & Title */}
+                    <div className="text-center mb-6 animate-slideDown animation-delay-100">
                         <div className="inline-block">
                             <div className="relative group">
                                 <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 to-amber-500 rounded-2xl blur-xl opacity-75 group-hover:opacity-100 transition-opacity duration-500" />
-                                <div className="relative bg-gradient-to-br from-amber-500 to-orange-600 w-24 h-24 rounded-2xl flex items-center justify-center mx-auto shadow-2xl animate-bounce-slow">
-                                    <span className="text-white text-5xl animate-pulse-slow">✂️</span>
+                                <div className="relative bg-gradient-to-br from-amber-500 to-orange-600 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto shadow-2xl animate-bounce-slow">
+                                    <span className="text-white text-4xl animate-pulse-slow">✂️</span>
                                 </div>
                             </div>
                         </div>
                         <h1 className="text-3xl font-bold text-white mt-4 tracking-tight">{texts.title}</h1>
                         <p className="text-cyan-400 text-sm mt-1">{texts.subtitle}</p>
-                        <p className="text-gray-500 text-xs mt-2">{texts.welcome}, {greeting}!</p>
+                        <div className="mt-2 flex items-center justify-center gap-2">
+                            <span className="text-amber-400 text-lg">✨</span>
+                            <p className="text-gray-400 text-sm">{getGreeting()}, {texts.welcome}!</p>
+                            <span className="text-amber-400 text-lg">✨</span>
+                        </div>
                     </div>
 
                     {/* Login Form */}
-                    <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-8 border border-white/10 shadow-2xl animate-fadeIn">
-                        <form onSubmit={handleLogin} className="space-y-6">
+                    <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-6 sm:p-8 border border-white/10 shadow-2xl animate-fadeIn">
+                        <form onSubmit={handleLogin} className="space-y-5">
                             <div className="space-y-2">
                                 <label className="block text-gray-300 text-sm font-medium">{texts.username}</label>
                                 <div className="relative group">
@@ -231,20 +291,43 @@ function Login({ setToken, setRole }) {
                             </button>
                         </form>
 
-                        <div className="mt-6 text-center">
-                            <p className="text-gray-500 text-xs">
+                        {/* Demo Credentials */}
+                        <div className="mt-4 text-center">
+                            <p className="text-gray-500 text-xs bg-gray-800/30 inline-block px-3 py-1 rounded-full">
                                 {texts.demoCreds}
                             </p>
-                            <p className="text-gray-600 text-xs mt-4">
-                                {texts.noAccount}
-                            </p>
+                        </div>
+
+                        {/* Need Help Section */}
+                        <div className="mt-6 pt-4 border-t border-gray-700/50">
+                            <p className="text-gray-400 text-xs text-center mb-3">{texts.needHelp}</p>
+                            <div className="flex flex-col sm:flex-row gap-3">
+                                <button
+                                    onClick={openWhatsApp}
+                                    className="flex-1 flex items-center justify-center gap-2 bg-green-600/20 hover:bg-green-600/30 border border-green-500/30 text-green-400 py-2 rounded-xl text-sm font-medium transition-all duration-300 hover:scale-[1.02]"
+                                >
+                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M12.032 2.002c-5.514 0-9.994 4.48-9.994 9.993 0 1.76.455 3.48 1.318 5.003L2 22.002l5.057-1.352c1.47.8 3.13 1.223 4.824 1.223 5.514 0 9.995-4.48 9.995-9.993 0-5.513-4.48-9.994-9.994-9.994z"/>
+                                    </svg>
+                                    {texts.contactWhatsapp}
+                                </button>
+                                <button
+                                    onClick={openEmail}
+                                    className="flex-1 flex items-center justify-center gap-2 bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/30 text-blue-400 py-2 rounded-xl text-sm font-medium transition-all duration-300 hover:scale-[1.02]"
+                                >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                    </svg>
+                                    {texts.contactEmail}
+                                </button>
+                            </div>
                         </div>
                     </div>
 
                     {/* Footer */}
-                    <div className="text-center mt-8">
-                        <p className="text-gray-600 text-xs animate-pulse-slow">
-                            © 2024 Trust Barbershop | Premium Management System
+                    <div className="text-center mt-6">
+                        <p className="text-gray-500 text-xs">
+                            © 2026 {texts.title} | {texts.footer}
                         </p>
                     </div>
                 </div>
@@ -252,10 +335,10 @@ function Login({ setToken, setRole }) {
 
             <style>{`
                 @keyframes float {
-                    0%, 100% { transform: translateY(0px) translateX(0px); opacity: 0.3; }
-                    25% { transform: translateY(-20px) translateX(10px); opacity: 0.6; }
-                    50% { transform: translateY(0px) translateX(20px); opacity: 0.3; }
-                    75% { transform: translateY(20px) translateX(10px); opacity: 0.6; }
+                    0%, 100% { transform: translateY(0px) translateX(0px); opacity: 0.2; }
+                    25% { transform: translateY(-25px) translateX(15px); opacity: 0.5; }
+                    50% { transform: translateY(0px) translateX(30px); opacity: 0.2; }
+                    75% { transform: translateY(25px) translateX(15px); opacity: 0.5; }
                 }
                 @keyframes slideDown {
                     from { opacity: 0; transform: translateY(-30px); }
@@ -267,17 +350,18 @@ function Login({ setToken, setRole }) {
                 }
                 @keyframes bounce-slow {
                     0%, 100% { transform: translateY(0); }
-                    50% { transform: translateY(-10px); }
+                    50% { transform: translateY(-8px); }
                 }
                 @keyframes pulse-slow {
-                    0%, 100% { opacity: 0.5; transform: scale(1); }
-                    50% { opacity: 0.8; transform: scale(1.05); }
+                    0%, 100% { opacity: 0.4; transform: scale(1); }
+                    50% { opacity: 0.7; transform: scale(1.08); }
                 }
                 .animate-float { animation: float infinite ease-in-out; }
-                .animate-slideDown { animation: slideDown 0.6s ease-out; }
+                .animate-slideDown { animation: slideDown 0.5s ease-out; }
                 .animate-fadeIn { animation: fadeIn 0.6s ease-out; }
                 .animate-bounce-slow { animation: bounce-slow 3s ease-in-out infinite; }
-                .animate-pulse-slow { animation: pulse-slow 3s ease-in-out infinite; }
+                .animate-pulse-slow { animation: pulse-slow 4s ease-in-out infinite; }
+                .animation-delay-100 { animation-delay: 0.1s; }
                 .animation-delay-1000 { animation-delay: 1s; }
                 .animation-delay-2000 { animation-delay: 2s; }
             `}</style>
